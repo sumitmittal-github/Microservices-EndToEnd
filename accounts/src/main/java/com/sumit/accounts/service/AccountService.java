@@ -36,8 +36,6 @@ public class AccountService {
 
         // create customer object
         Customer customer = CustomerMapper.mapToCustomer(customerDto, new Customer());
-        customer.setCreatedAt(LocalDateTime.now());
-        customer.setCreatedBy("SUMIT MITTAL");
         Customer savedCustomer = customerRepository.save(customer);
 
         // create account object
@@ -47,8 +45,6 @@ public class AccountService {
         account.setAccountNumber(accountNum);
         account.setAccountType(AppConstant.DEFAULT_ACCOUNT_TYPE_SAVING);
         account.setBranchAddress(AppConstant.DEFAULT_BANK_BRANCH_ADDRESS);
-        account.setCreatedAt(LocalDateTime.now());
-        account.setCreatedBy("SUMIT MITTAL");
         //account.setCustomer(customer);            TODO
         accountRepository.save(account);
     }
