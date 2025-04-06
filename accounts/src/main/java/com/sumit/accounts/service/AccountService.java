@@ -1,6 +1,7 @@
 package com.sumit.accounts.service;
 
 import com.sumit.accounts.constant.AppConstant;
+import com.sumit.accounts.dto.AccountDto;
 import com.sumit.accounts.dto.CustomerDto;
 import com.sumit.accounts.entity.Account;
 import com.sumit.accounts.entity.Customer;
@@ -10,6 +11,7 @@ import com.sumit.accounts.mapper.AccountMapper;
 import com.sumit.accounts.mapper.CustomerMapper;
 import com.sumit.accounts.repository.AccountRepository;
 import com.sumit.accounts.repository.CustomerRepository;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +35,7 @@ public class AccountService {
             throw new CustomerAlreadyExistsException("Customer already exists with mobile no "+customerDto.getMobileNumber());
 
         // create customer object
-        Customer customer = CustomerMapper.mapToCustomer(customerDto);
+        Customer customer = CustomerMapper.mapToCustomer(customerDto, new Customer());
         customer.setCreatedAt(LocalDateTime.now());
         customer.setCreatedBy("SUMIT MITTAL");
         Customer savedCustomer = customerRepository.save(customer);
@@ -59,9 +61,34 @@ public class AccountService {
         Account account = accountRepository.findByCustomerId(customer.getCustomerId()).orElseThrow(
                 () -> new ResourceNotFoundException("Account", "customerId", customer.getCustomerId().toString())
         );
-        CustomerDto customerDto = CustomerMapper.mapToCustomerDto(customer);
-        customerDto.setAccountsDto(AccountMapper.mapToAccountDto(account));
+        CustomerDto customerDto = CustomerMapper.mapToCustomerDTO(customer, new CustomerDto());
+        customerDto.setAccountsDto(AccountMapper.mapToAccountDTO(account, new AccountDto()));
         return customerDto;
+    }
+
+
+    public boolean updateAccount(@Valid CustomerDto customerDto) {
+        boolean isUpdated = false;
+        AccountDto accountsDto = customerDto.getAccountsDto();
+        if(accountsDto !=null ){
+
+            // update account details in DB
+            Account accounts = accountRepository.findById(accountsDto.getAccountNumber()).orElseThrow(
+                    () -> new ResourceNotFoundException("Account", "AccountNumber", accountsDto.getAccountNumber().toString())
+            );
+            AccountMapper.mapToAccount(accountsDto, accounts);
+            accounts = accountRepository.save(accounts);
+
+            // customer details in DB
+            Long customerId = accounts.getCustomerId();
+            Customer customer = customerRepository.findById(customerId).orElseThrow(
+                    () -> new ResourceNotFoundException("Customer", "CustomerID", customerId.toString())
+            );
+            CustomerMapper.mapToCustomer(customerDto,customer);
+            customerRepository.save(customer);
+            isUpdated = true;
+        }
+        return  isUpdated;
     }
 
 
