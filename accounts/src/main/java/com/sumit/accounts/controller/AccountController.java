@@ -20,15 +20,11 @@ public class AccountController {
 
     @PostMapping("/create")
     public ResponseEntity<ResponseDto> createAccount(@RequestBody CustomerDto customerDto) {
-
         accountService.createAccount(customerDto);
         ResponseDto responseDto = new ResponseDto(AppConstant.STATUS_201, AppConstant.MESSAGE_201);
-
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(responseDto);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                             .body(responseDto);
     }
-
 
 
 }
