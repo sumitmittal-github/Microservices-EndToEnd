@@ -12,7 +12,6 @@ import com.sumit.accounts.mapper.CustomerMapper;
 import com.sumit.accounts.repository.AccountRepository;
 import com.sumit.accounts.repository.CustomerRepository;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -46,8 +45,8 @@ public class AccountService {
         Account account = new Account();
         account.setCustomerId(savedCustomer.getCustomerId());
         account.setAccountNumber(accountNum);
-        account.setAccountType(AppConstant.SAVINGS);
-        account.setBranchAddress(AppConstant.ADDRESS);
+        account.setAccountType(AppConstant.DEFAULT_ACCOUNT_TYPE_SAVING);
+        account.setBranchAddress(AppConstant.DEFAULT_BANK_BRANCH_ADDRESS);
         account.setCreatedAt(LocalDateTime.now());
         account.setCreatedBy("SUMIT MITTAL");
         //account.setCustomer(customer);            TODO
@@ -80,7 +79,7 @@ public class AccountService {
             AccountMapper.mapToAccount(accountsDto, accounts);
             accounts = accountRepository.save(accounts);
 
-            // customer details in DB
+            // update customer details in DB
             Long customerId = accounts.getCustomerId();
             Customer customer = customerRepository.findById(customerId).orElseThrow(
                     () -> new ResourceNotFoundException("Customer", "CustomerID", customerId.toString())
