@@ -20,22 +20,19 @@ public class LoanService {
 
     public void createLoan(String mobileNumber) {
         Optional<Loan> optionalLoan= loanRepository.findByMobileNumber(mobileNumber);
-        if(optionalLoan.isPresent()){
+        if(optionalLoan.isPresent())
             throw new LoanAlreadyExistsException("Loan already registered with given mobileNumber "+mobileNumber);
-        }
-        loanRepository.save(createNewLoan(mobileNumber));
-    }
 
-    private Loan createNewLoan(String mobileNumber) {
+        // create new loan and save in DB
         Loan newLoan = new Loan();
         long randomLoanNumber = 100000000000L + new Random().nextInt(900000000);
         newLoan.setLoanNumber(Long.toString(randomLoanNumber));
         newLoan.setMobileNumber(mobileNumber);
-        newLoan.setLoanType(AppConstant.HOME_LOAN);
-        newLoan.setTotalLoan(AppConstant.NEW_LOAN_LIMIT);
+        newLoan.setLoanType(AppConstant.DEFAULT_LOAN_TYPE_HOME_LOAN);
+        newLoan.setTotalLoan(AppConstant.DEFAULT_LOAN_LIMIT);
         newLoan.setAmountPaid(0);
-        newLoan.setOutstandingAmount(AppConstant.NEW_LOAN_LIMIT);
-        return newLoan;
+        newLoan.setOutstandingAmount(AppConstant.DEFAULT_LOAN_LIMIT);
+        loanRepository.save(newLoan);
     }
 
     public LoanDto fetchLoan(String mobileNumber) {

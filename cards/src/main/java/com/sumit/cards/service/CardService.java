@@ -24,10 +24,8 @@ public class CardService {
         if(optionalCards.isPresent()){
             throw new CardAlreadyExistsException("Card already registered with given mobileNumber "+mobileNumber);
         }
-        cardRepository.save(createNewCard(mobileNumber));
-    }
-    
-    private Card createNewCard(String mobileNumber) {
+
+        // create new card and save in DB
         Card newCard = new Card();
         long randomCardNumber = 100000000000L + new Random().nextInt(900000000);
         newCard.setCardNumber(Long.toString(randomCardNumber));
@@ -36,7 +34,7 @@ public class CardService {
         newCard.setTotalLimit(AppConstant.NEW_CARD_LIMIT);
         newCard.setAmountUsed(0);
         newCard.setAvailableAmount(AppConstant.NEW_CARD_LIMIT);
-        return newCard;
+        cardRepository.save(newCard);
     }
     
     public CardDto fetchCard(String mobileNumber) {
@@ -61,6 +59,5 @@ public class CardService {
         cardRepository.deleteById(cards.getCardId());
         return true;
     }
-
 
 }
