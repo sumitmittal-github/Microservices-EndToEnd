@@ -5,6 +5,8 @@ import com.sumit.accounts.dto.CustomerDto;
 import com.sumit.accounts.entity.Account;
 import com.sumit.accounts.entity.Customer;
 import com.sumit.accounts.exception.CustomerAlreadyExistsException;
+import com.sumit.accounts.exception.ResourceNotFoundException;
+import com.sumit.accounts.mapper.AccountMapper;
 import com.sumit.accounts.mapper.CustomerMapper;
 import com.sumit.accounts.repository.AccountRepository;
 import com.sumit.accounts.repository.CustomerRepository;
@@ -47,6 +49,19 @@ public class AccountService {
         account.setCreatedBy("SUMIT MITTAL");
         //account.setCustomer(customer);            TODO
         accountRepository.save(account);
+    }
+
+
+    public CustomerDto fetchAccount(String mobileNumber) {
+        Customer customer = customerRepository.findByMobileNumber(mobileNumber).orElseThrow(
+                () -> new ResourceNotFoundException("Customer", "mobileNumber", mobileNumber)
+        );
+        Account account = accountRepository.findByCustomerId(customer.getCustomerId()).orElseThrow(
+                () -> new ResourceNotFoundException("Account", "customerId", customer.getCustomerId().toString())
+        );
+        CustomerDto customerDto = CustomerMapper.mapToCustomerDto(customer);
+        customerDto.setAccountsDto(AccountMapper.mapToAccountDto(account));
+        return customerDto;
     }
 
 

@@ -4,6 +4,7 @@ import com.sumit.accounts.constant.AppConstant;
 import com.sumit.accounts.dto.CustomerDto;
 import com.sumit.accounts.dto.ResponseDto;
 import com.sumit.accounts.service.AccountService;
+import jakarta.validation.constraints.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -24,6 +25,13 @@ public class AccountController {
         ResponseDto responseDto = new ResponseDto(AppConstant.STATUS_201, AppConstant.MESSAGE_201);
         return ResponseEntity.status(HttpStatus.CREATED)
                              .body(responseDto);
+    }
+
+    @GetMapping("/fetch")
+    public ResponseEntity<CustomerDto> fetchAccountDetails(@RequestParam @Pattern(regexp="(^$|[0-9]{10})",message = "Mobile number must be 10 digits") String mobileNumber) {
+        CustomerDto customerDto = accountService.fetchAccount(mobileNumber);
+        return ResponseEntity.status(HttpStatus.OK)
+                             .body(customerDto);
     }
 
 

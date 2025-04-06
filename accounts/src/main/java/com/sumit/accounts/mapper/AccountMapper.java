@@ -3,7 +3,7 @@ package com.sumit.accounts.mapper;
 import com.sumit.accounts.dto.AccountDto;
 import com.sumit.accounts.entity.Account;
 
-public class AccountsMapper {
+public class AccountMapper {
 
     public static AccountDto mapToAccountDto(Account accounts) {
         AccountDto accountDto = new AccountDto();
