@@ -12,6 +12,7 @@ import com.sumit.accounts.mapper.CustomerMapper;
 import com.sumit.accounts.repository.AccountRepository;
 import com.sumit.accounts.repository.CustomerRepository;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -89,6 +90,16 @@ public class AccountService {
             isUpdated = true;
         }
         return  isUpdated;
+    }
+
+
+    public boolean deleteAccount(String mobileNumber) {
+        Customer customer = customerRepository.findByMobileNumber(mobileNumber).orElseThrow(
+                () -> new ResourceNotFoundException("Customer", "mobileNumber", mobileNumber)
+        );
+        accountRepository.deleteByCustomerId(customer.getCustomerId());
+        customerRepository.deleteById(customer.getCustomerId());
+        return true;
     }
 
 

@@ -1,6 +1,5 @@
 package com.sumit.accounts.controller;
 
-import com.sumit.accounts.constant.AppConstant;
 import com.sumit.accounts.dto.CustomerDto;
 import com.sumit.accounts.dto.ResponseDto;
 import com.sumit.accounts.service.AccountService;
@@ -23,7 +22,7 @@ public class AccountController {
     @PostMapping("/create")
     public ResponseEntity<ResponseDto> createAccount(@RequestBody CustomerDto customerDto) {
         accountService.createAccount(customerDto);
-        ResponseDto responseDto = new ResponseDto(AppConstant.STATUS_201, AppConstant.MESSAGE_201);
+        ResponseDto responseDto = new ResponseDto(HttpStatus.CREATED.value(), HttpStatus.CREATED.getReasonPhrase());
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 
@@ -37,9 +36,22 @@ public class AccountController {
     public ResponseEntity<ResponseDto> updateAccountDetails(@Valid @RequestBody CustomerDto customerDto) {
         boolean isUpdated = accountService.updateAccount(customerDto);
         if(isUpdated)
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponseDto(AppConstant.STATUS_200, AppConstant.MESSAGE_200));
+            return ResponseEntity.status(HttpStatus.OK)
+                                 .body(new ResponseDto(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase()));
         else
-            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseDto(AppConstant.STATUS_417, AppConstant.MESSAGE_417_UPDATE));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                 .body(new ResponseDto(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase()));
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<ResponseDto> deleteAccountDetails(@RequestParam @Pattern(regexp="(^$|[0-9]{10})",message = "Mobile number must be 10 digits") String mobileNumber) {
+        boolean isDeleted = accountService.deleteAccount(mobileNumber);
+        if(isDeleted)
+            return ResponseEntity.status(HttpStatus.OK)
+                                 .body(new ResponseDto(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase()));
+        else
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                 .body(new ResponseDto(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase()));
     }
 
 
